@@ -37,7 +37,7 @@ const insertBookHandler = (request, h) => {
     pageCount,
     readPage,
     finished,
-    reading,
+    reading: (readPage >=1) ? true : false,
     insertedAt,
     updatedAt,
     finished,
@@ -68,13 +68,42 @@ const insertBookHandler = (request, h) => {
 
 // / START OF GET getAllBooksHandler =================================
 
-const getAllBooksHandler = () => ({
-  status: 'success',
-  data: {
-    // / the books should have contains only id, name, and publisher property
-    books: books.map(({id, name, publisher}) => ({id, name, publisher})),
-  },
-});
+const getAllBooksHandler = (request) => {
+  const {name, reading, finished} = request.query;
+
+  let filteredBooks = books;
+    // // [OPTIONAL query name]
+  if (name) {
+    const lowercaseName = name.toLowerCase();
+    filteredBooks = filteredBooks.filter(
+        (book) => book.name.toLowerCase().includes(lowercaseName),
+    );
+  }
+  // // [OPTIONAL query reading]
+  if (reading) {
+    const isReading = reading === '1';
+    filteredBooks = filteredBooks.filter((book) =>
+      book.reading === isReading);
+  }
+  // // [OPTIONAL query finished]
+  if (finished) {
+    const isFinished = finished === '1';
+    filteredBooks = filteredBooks.filter((book) =>
+      book.finished === isFinished);
+  }
+
+  return {
+    status: 'success',
+    data: {
+      books: filteredBooks.map(({id, name, publisher}) => ({
+        id,
+        name,
+        publisher,
+      })),
+    },
+  };
+};
+
 
 // / END OF GET getAllBooksHandler ===================================
 
