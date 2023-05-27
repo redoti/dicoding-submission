@@ -37,7 +37,7 @@ const insertBookHandler = (request, h) => {
     pageCount,
     readPage,
     finished,
-    reading: (readPage >=1) ? true : false,
+    reading,
     insertedAt,
     updatedAt,
     finished,
@@ -72,7 +72,7 @@ const getAllBooksHandler = (request) => {
   const {name, reading, finished} = request.query;
 
   let filteredBooks = books;
-    // // [OPTIONAL query name]
+  // // [OPTIONAL query name]
   if (name) {
     const lowercaseName = name.toLowerCase();
     filteredBooks = filteredBooks.filter(
@@ -112,9 +112,9 @@ const getAllBooksHandler = (request) => {
 const getBookByIdHandler = (request, h) => {
   const {id} = request.params;
 
-  const book = books.filter((book) => book.id === id)[0];
+  const book = books.find((book) => book.id === id);
 
-  if (book !== undefined) {
+  if (book) {
     return {
       status: 'success',
       data: {
@@ -122,6 +122,7 @@ const getBookByIdHandler = (request, h) => {
       },
     };
   }
+
   const response = h.response({
     status: 'fail',
     message: 'Buku tidak ditemukan',
@@ -129,6 +130,7 @@ const getBookByIdHandler = (request, h) => {
   response.code(404);
   return response;
 };
+
 
 // / END OF GET getBookByIdHandler =================================
 
@@ -168,12 +170,6 @@ const editBookByIdHandler = (request, h) => {
       publisher,
       pageCount,
       readPage,
-      finished,
-      reading,
-      insertedAt,
-      updatedAt,
-      finished,
-      readPage,
       reading,
       updatedAt,
     };
@@ -186,7 +182,7 @@ const editBookByIdHandler = (request, h) => {
   }
   const response = h.response({
     status: 'fail',
-    message: 'Gagal memperbarui catatan. Id tidak ditemukan',
+    message: 'Gagal memperbarui buku. Id tidak ditemukan',
   });
   response.code(404);
   return response;
